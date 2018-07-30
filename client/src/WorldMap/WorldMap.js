@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import * as PIXI from 'pixi.js'
-import 'pixi-tiledmap';
+import 'pixi-tilemap';
 import './WorldMap.css';
 
 class WorldMap extends Component{
@@ -26,14 +26,25 @@ class WorldMap extends Component{
             view: this._canvas,
             backgroundColor : 0x1099bb,
         });
-        this.setMap();
+
+        this.pullMapData()
+            .then((json) => {
+                this.setMap(json);
+            });
+        
     }
 
-    setMap(){
+    setMap(mapData){
+        console.log(mapData);
         PIXI.loader
-            .add('maps/world.tmx')
-            .load(() => {
-                this._app.render(new PIXI.extras.TiledMap('maps/world.tmx'));
+            .add([
+                "images/world_colors.png"
+            ])
+            .load((loader, resources) => {
+                var worldTiles = new PIXI.tilemap.CompositeRectTileLayer(0, PIXI.utils.TextureCache['images/world_colors.png']);
+                this._app.stage.addChild(worldTiles);
+
+                console.log(worldTiles);
             });
     }
 
@@ -53,17 +64,13 @@ class WorldMap extends Component{
     }
 
     pullMapData(){
-        fetch('/maps/world.json')
+        return fetch('/maps/world.json')
             .then(function(response){
                 return response.json();
             })
-            .then(function(json){
-                console.log(json);
-            });
     }
 
     render(){
-        //this.pullMapData();
         const display = this.state.loading ? this.getLoadingDisplay() : this.getWorldMapDisplay();
         return (
             <div>
