@@ -9,8 +9,9 @@ class WorldMap extends Component{
         this.state = {
             loading: false,
             mapData: null,
-            mapWidth: 400,
-            mapHeight: 300,
+            //adding one to the view to check border
+            mapWidth: 401,
+            mapHeight: 301,
         }
 
         this.getWorldMapDisplay = this.getWorldMapDisplay.bind(this);
@@ -35,17 +36,47 @@ class WorldMap extends Component{
     }
 
     setMap(mapData){
-        console.log(mapData);
-        PIXI.loader
-            .add([
-                "images/world_colors.png"
-            ])
-            .load((loader, resources) => {
-                var worldTiles = new PIXI.tilemap.CompositeRectTileLayer(0, PIXI.utils.TextureCache['images/world_colors.png']);
-                this._app.stage.addChild(worldTiles);
+        var sprite_width = 1;
+        var sprite_height = 1;
+        var mySpriteSheetImage  = PIXI.BaseTexture.fromImage("images/world_colors.png");
+        
+        var textures = [];
 
-                console.log(worldTiles);
-            });
+        for(let i=0; i<3; i++){
+            for(let j=0; j<16; j++){
+                textures.push(
+                    new PIXI.Texture(
+                        mySpriteSheetImage,
+                        new PIXI.Rectangle(j, i, sprite_width, sprite_height)
+                    )
+                );
+            }
+        }
+
+        var layers = mapData.layers;
+        layers.forEach(layer => {
+            let data = layer.data;
+            let layer_h = layer.height;
+            let layer_w = layer.width;
+            let off_x = layer.x;
+            let off_y = layer.y;
+            let scale = 4;
+
+            for(let i=0; i<layer_h; i++){
+                for(let j=0; j<layer_w; j++){
+                    let tid = data[ i*layer_w + j ] - 1;
+
+                    if(tid > -1){
+                        let sprite = new PIXI.Sprite(textures[tid]);
+                        sprite.scale.x = scale;
+                        sprite.scale.y = scale;
+                        sprite.x = off_x + j*scale;
+                        sprite.y = off_y + i*scale;
+                        this._app.stage.addChild(sprite);
+                    }
+                }
+            }
+        });
     }
 
     getWorldMapDisplay(){
