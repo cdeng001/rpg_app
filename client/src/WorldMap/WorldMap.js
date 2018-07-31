@@ -7,44 +7,63 @@ class WorldMap extends Component{
     constructor(props){
         super(props);
         this.state = {
-            loading: false,
-            mapData: null,
-            //adding one to the view to check border
-            mapWidth: 401,
-            mapHeight: 301,
+            loading: true,
+            gridData: [],
+            rawMapData: null,
         }
 
-        this.getWorldMapDisplay = this.getWorldMapDisplay.bind(this);
-        this.getLoadingDisplay = this.getLoadingDisplay.bind(this);
+        this._canvasWidth = 801;
+        this._canvasHeight = 601;
+
         this.pullMapData = this.pullMapData.bind(this);
         this.setMap = this.setMap.bind(this);
+        this.drawMap = this.drawMap.bind(this);
+        this.setTextures = this.setTextures.bind(this);
+        this.canvasClick = this.canvasClick.bind(this);
     }
 
     componentDidMount() {
         this._app = new PIXI.Application({
-            width: this.state.mapWidth,
-            height: this.state.mapHeight,
+            width: this._canvasWidth,
+            height: this._canvasHeight,
             view: this._canvas,
             backgroundColor : 0x1099bb,
         });
 
+        this._canvas.addEventListener("click", this.canvasClick, false);
+
+        this.setTextures();
+
+        let _this = this;
         this.pullMapData()
             .then((json) => {
-                this.setMap(json);
-            });
-        
+
+                //set state
+                _this.setState({
+                    rawMapData: json,
+                    loading: false
+                },
+                () => {
+                    _this.setMap();
+                });
+            })
     }
 
-    setMap(mapData){
+    componentDidUpdate(){
+        //if we update, redraw map
+        this.drawMap();
+    }
+
+    setTextures(){
+        this._textures = [];
         var sprite_width = 1;
         var sprite_height = 1;
         var mySpriteSheetImage  = PIXI.BaseTexture.fromImage("images/world_colors.png");
-        
-        var textures = [];
 
+        // forloops use magic numbers
         for(let i=0; i<3; i++){
             for(let j=0; j<16; j++){
-                textures.push(
+                this._textures.push(
                     new PIXI.Texture(
                         mySpriteSheetImage,
                         new PIXI.Rectangle(j, i, sprite_width, sprite_height)
@@ -52,22 +71,37 @@ class WorldMap extends Component{
                 );
             }
         }
+    }
 
-        var layers = mapData.layers;
+    setMap(){
+
+        //set map variables
+        let mapData = this.state.rawMapData;
+        this._mapWidth = mapData.width;
+        this._mapHeight = mapData.height;
+
+        //draw map, set sprites on canvas
+        this.drawMap();
+    }
+
+    drawMap(){
+        let mapData = this.state.rawMapData;
+        let layers = mapData.layers;
         layers.forEach(layer => {
+            let name = layer.name;
             let data = layer.data;
             let layer_h = layer.height;
             let layer_w = layer.width;
             let off_x = layer.x;
             let off_y = layer.y;
-            let scale = 4;
+            let scale = 8;
 
             for(let i=0; i<layer_h; i++){
                 for(let j=0; j<layer_w; j++){
                     let tid = data[ i*layer_w + j ] - 1;
 
                     if(tid > -1){
-                        let sprite = new PIXI.Sprite(textures[tid]);
+                        let sprite = new PIXI.Sprite(this._textures[tid]);
                         sprite.scale.x = scale;
                         sprite.scale.y = scale;
                         sprite.x = off_x + j*scale;
@@ -79,21 +113,6 @@ class WorldMap extends Component{
         });
     }
 
-    getWorldMapDisplay(){
-        return (
-            <canvas 
-                className="world-map-canvas"
-                ref={ref => (this._canvas = ref)}>    
-            </canvas>
-        );
-    }
-
-    getLoadingDisplay(){
-        return (
-            <p>loading</p>
-        );
-    }
-
     pullMapData(){
         return fetch('/maps/world.json')
             .then(function(response){
@@ -101,11 +120,20 @@ class WorldMap extends Component{
             })
     }
 
+    flatten2D(x, y){
+        return y * this._mapWidth + x;
+    }
+
+    canvasClick(event){
+        console.log(event);
+    }
+
     render(){
-        const display = this.state.loading ? this.getLoadingDisplay() : this.getWorldMapDisplay();
         return (
             <div>
-                {display}
+                <canvas
+                    ref={ref => (this._canvas = ref)}>    
+                </canvas>
             </div>
         );
     }
