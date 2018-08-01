@@ -12,7 +12,11 @@ class WorldMap extends Component{
         }
 
         this._pallette = Object.freeze({
-            5: '#ff0000',
+            1: '#493829',
+            2: '#613318',
+            3: '#8F3B1B',
+            4: '#404F24',
+            5: '#4E6172',
         });
 
         this.pullMapData = this.pullMapData.bind(this);
@@ -84,13 +88,14 @@ class WorldMap extends Component{
         for(let i=0; i<this._mapHeight; i++){
             let cols = [];
             for(let j=0; j<this._mapWidth; j++){
-                let tile = this.state.gridData[ this.flatten2D(j, i) ];
+                let id = this.flatten2D(j, i);
+                let tile = this.state.gridData[ id ];
                 cols.push(
-                    <WorldMapTile name={tile.name} hex={this._pallette[tile.value]}/>
+                    <WorldMapTile name={tile.name} hex={this._pallette[tile.value]} key={id}/>
                 )
             }
             rows.push(
-                <tr>{cols}</tr>
+                <tr key={i}>{cols}</tr>
             )
         }
         return rows;
@@ -111,7 +116,9 @@ class WorldMap extends Component{
         return (
             <div>
                 <table>
-                    {this.drawGrid()}
+                    <tbody>
+                        {this.drawGrid()}
+                    </tbody>
                 </table>
             </div>
         );

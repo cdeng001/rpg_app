@@ -5,16 +5,11 @@ class WorldMapTile extends Component{
     constructor(props){
         super(props);
         
-        this.getStyle = this.getStyle.bind(this);
-    }
-
-    getStyle(){
-        return "background: " + this.props.hex;
     }
 
     render(){
         return (
-            <td style={this.getStyle()}>&nbsp;</td>
+            <td style={{background: this.props.hex}}></td>
         );
     }
 }
