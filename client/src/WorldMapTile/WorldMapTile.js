@@ -18,11 +18,16 @@ class WorldMapTile extends Component{
         let _this = this;
         if(!this.state.lite){
             this.setState({lite: true}, ()=>{
-                setTimeout(() => {
-                    console.log("called")
+                _this.t = setTimeout(() => {
                     _this.setState({lite: false});
                 }, 500);
             });
+        }
+        else{
+            clearTimeout(this.t);
+            this.t = setTimeout(() => {
+                _this.setState({lite: false});
+            }, 500);
         }
         
     }

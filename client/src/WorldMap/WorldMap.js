@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './WorldMap.css';
 import WorldMapTile from '../WorldMapTile/WorldMapTile';
-import {flatten2D} from '../utils';
+import {flatten2D, pushSet} from '../utils';
 
 class WorldMap extends Component{
     constructor(props){
@@ -125,47 +125,30 @@ class WorldMap extends Component{
     }
 
     triggerSonar(x, y){
-        let depth = 6;
-        let point = flatten2D(x, y, this._mapWidth);
+        //get farthest point dist
+        let iterations = Math.max(x, x - this._mapWidth) + Math.max(y, y - this._mapHeight);
 
-        //get farthest edge
-        let distances = [x, y, x - this._mapWidth, y - this._mapHeight];
-        let iterations = Math.max(...distances);
+        for(let t=0; t<iterations; t++){
+            setTimeout(()=>{
+                let nodes = [];
+                let depth = t;
+                for(let i=0; i<=depth/2; i++){
+                    let low = i;
+                    let high = depth - i;
 
-        let nodes = [];
-        nodes.push(
-            flatten2D(x+depth, y, this._mapWidth),
-            flatten2D(x-depth, y, this._mapWidth),
-            flatten2D(x, y-depth, this._mapWidth),
-            flatten2D(x, y+depth, this._mapWidth),
-        )
-        for(let i=1; i<=depth/2; i++){
-            let low = i;
-            let high = depth - i;
+                    nodes = pushSet(nodes, x, y, low, high, this._mapWidth, this._mapHeight);
+                }
 
-            nodes.push(
-                flatten2D(x+low, y+high, this._mapWidth),
-                flatten2D(x-low, y-high, this._mapWidth),
-                flatten2D(x+low, y-high, this._mapWidth),
-                flatten2D(x-low, y+high, this._mapWidth),
-            )
-            if(low !== high){
-                //anot the same, so swap
-                nodes.push(
-                    flatten2D(x+high, y+low, this._mapWidth),
-                    flatten2D(x-high, y-low, this._mapWidth),
-                    flatten2D(x+high, y-low, this._mapWidth),
-                    flatten2D(x-high, y+low, this._mapWidth),
-                )
-            }
+                let tiles = this._gridTiles;
+                nodes.forEach(node => {
+                    if(node < tiles.length){
+                        tiles[node].current.lightUp();
+                    }
+                });
+            }, t*100);
+            
         }
-
-        let tiles = this._gridTiles;
-        nodes.forEach(node => {
-            if(node < tiles.length){
-                tiles[node].current.lightUp();
-            }
-        });
+        
     }
 
     render(){
