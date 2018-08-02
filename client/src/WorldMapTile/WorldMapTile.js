@@ -27,7 +27,7 @@ class WorldMapTile extends Component{
             clearTimeout(this.t);
             this.t = setTimeout(() => {
                 _this.setState({lite: false});
-            }, 500);
+            }, 100);
         }
         
     }
