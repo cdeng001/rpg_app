@@ -26,6 +26,8 @@ class WorldMap extends Component{
         this.initData = this.initData.bind(this);
         this.setGrid = this.setGrid.bind(this);
         this.drawGrid = this.drawGrid.bind(this);
+        this.triggerSonar = this.triggerSonar.bind(this);
+        this.tileClick = this.tileClick.bind(this);
     }
 
     componentDidMount() {
@@ -97,7 +99,7 @@ class WorldMap extends Component{
                 let tileRef = React.createRef();
                 cols.push(
                     <WorldMapTile
-                        trigger={() => {this.triggerSonar(j,i)}}
+                        trigger={() => {this.tileClick(tileRef)}}
                         hex={this._pallette[tile.value]}
                         ref = {tileRef}
                         name={tile.name}
@@ -124,11 +126,15 @@ class WorldMap extends Component{
             })
     }
 
+    tileClick(ref){
+        this.triggerSonar(...ref.current.getCoords());
+    }
+
     triggerSonar(x, y){
-        //get farthest point dist
-        let iterations = Math.max(x, x - this._mapWidth) + Math.max(y, y - this._mapHeight);
+        let iterations = 8;
 
         for(let t=0; t<iterations; t++){
+            
             setTimeout(()=>{
                 let nodes = [];
                 let depth = t;
@@ -145,10 +151,17 @@ class WorldMap extends Component{
                         tiles[node].current.lightUp();
                     }
                 });
-            }, t*100);
-            
+
+                //timeout for removing the lights
+                setTimeout(()=>{
+                    let ns = nodes;
+                    ns.forEach(n => {
+                        tiles[n].current.lightDown();
+                    });
+                }, 50);
+
+            }, t*60);
         }
-        
     }
 
     render(){

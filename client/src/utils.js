@@ -20,7 +20,7 @@ export let pushSet = function(arr, x, y, low, high, max_w, max_h){
         arr.push( flatten2D(x-low, y-high, max_w) );
     }
 
-    if(high !== 0){
+    if(low !== 0){
         if( x_plus_low && y_minus_high ){
             arr.push( flatten2D(x+low, y-high, max_w) );
         }
@@ -37,14 +37,11 @@ export let pushSet = function(arr, x, y, low, high, max_w, max_h){
         if( x_minus_high && y_minus_low ){
             arr.push( flatten2D(x-high, y-low, max_w) );
         }
-
-        if(low !== 0){
-            if( x_plus_high && y_minus_low ){
-                arr.push( flatten2D(x+high, y-low, max_w) );
-            }
-            if( x_minus_high && y_plus_low ){
-                arr.push( flatten2D(x-high, y+low, max_w) );
-            }
+        if( x_plus_high && y_minus_low ){
+            arr.push( flatten2D(x+high, y-low, max_w) );
+        }
+        if( x_minus_high && y_plus_low ){
+            arr.push( flatten2D(x-high, y+low, max_w) );
         }
     }
 
