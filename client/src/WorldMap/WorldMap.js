@@ -10,6 +10,7 @@ class WorldMap extends Component{
             loading: true,
             gridData: [],
             rawMapData: null,
+            region: null,
         }
 
         this._gridTiles = [];
@@ -28,6 +29,7 @@ class WorldMap extends Component{
         this.drawGrid = this.drawGrid.bind(this);
         this.triggerSonar = this.triggerSonar.bind(this);
         this.tileClick = this.tileClick.bind(this);
+        this.setRegion = this.setRegion.bind(this);
     }
 
     componentDidMount() {
@@ -60,11 +62,14 @@ class WorldMap extends Component{
     setGrid(){
         let mapData = this.state.rawMapData;
         let layers = mapData.layers;
-        let grid = new Array(this._mapWidth * this._mapHeight);
-        grid.fill({
-            name: 'empty',
-            value: 0,
-        });
+
+        let grid = Array.from({ 
+            length: this._mapWidth * this._mapHeight 
+        }, () => new Object({
+            name:'empty',
+            value:0
+        }));
+        
 
         layers.forEach(layer => {
             let name = layer.name;
@@ -100,9 +105,10 @@ class WorldMap extends Component{
                 cols.push(
                     <WorldMapTile
                         trigger={() => {this.tileClick(tileRef)}}
+                        selectedRegion={this.state.region}
                         hex={this._pallette[tile.value]}
-                        ref = {tileRef}
                         name={tile.name}
+                        ref={tileRef}
                         key={id}
                         x={j}
                         y={i}
@@ -128,6 +134,7 @@ class WorldMap extends Component{
 
     tileClick(ref){
         this.triggerSonar(...ref.current.getCoords());
+        this.setRegion(ref.current.getRegion());
     }
 
     triggerSonar(x, y){
@@ -162,6 +169,10 @@ class WorldMap extends Component{
 
             }, t*60);
         }
+    }
+
+    setRegion(newRegion){
+        this.setState({region:newRegion});
     }
 
     render(){

@@ -16,6 +16,7 @@ class WorldMapTile extends Component{
         this.lightUp = this.lightUp.bind(this);
         this.lightDown = this.lightDown.bind(this);
         this.getCoords = this.getCoords.bind(this);
+        this.getRegion = this.getRegion.bind(this);
     }
 
     lightDown(){
@@ -52,8 +53,15 @@ class WorldMapTile extends Component{
         if(lite){
             return tinycolor(this.props.hex).lighten(25).toString();
         }
+        else if(this.props.name === this.props.selectedRegion){
+            return tinycolor(this.props.hex).lighten(10).toString();
+        }
 
         return this.props.hex;
+    }
+
+    getRegion(){
+        return this.props.name;
     }
 
     render(){
