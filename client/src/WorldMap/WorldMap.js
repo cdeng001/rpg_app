@@ -16,11 +16,11 @@ class WorldMap extends Component{
         this._gridTiles = [];
 
         this._pallette = Object.freeze({
-            1: '#493829',
-            2: '#613318',
-            3: '#8F3B1B',
-            4: '#404F24',
-            5: '#4E6172',
+            1: '#493829', 17: '#816C5B',  33: '#A9A18C',
+            2: '#613318', 18: '#855723',  34: '#B99C6B',
+            3: '#8F3B1B', 19: '#D57500',  35: '#DBCA69',
+            4: '#404F24', 20: '#668D3C',  36: '#BDD09F',
+            5: '#4E6172', 21: '#83929F',  37: '#A3ADB8',
         });
 
         this.pullMapData = this.pullMapData.bind(this);
@@ -138,7 +138,7 @@ class WorldMap extends Component{
     }
 
     triggerSonar(x, y){
-        let iterations = 8;
+        let iterations = 3;
 
         for(let t=0; t<iterations; t++){
             
@@ -165,7 +165,7 @@ class WorldMap extends Component{
                     ns.forEach(n => {
                         tiles[n].current.lightDown();
                     });
-                }, 50);
+                }, 150);
 
             }, t*60);
         }

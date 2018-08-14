@@ -1,0 +1,71 @@
+@import url(https://fonts.googleapis.com/css?family=Raleway:400,500,800);
+
+ul{
+    margin: 0;
+    padding: 0;
+}
+
+.ccs-button{
+    width: 100px;
+    text-align: center;
+}
+
+.center-btn{
+    width: 100%;
+    transition: width .8s ease 1s;
+}
+
+.left-btn{
+    transition: width .8s ease;
+}
+
+.ccs-wrapper *{
+    font-family: 'Raleway', Arial, sans-serif;
+    display: inline;
+}
+
+.ccs-ul-wrapper {
+    opacity: 0;
+    visibility: hidden;
+    margin-left: 20px;
+    transition-delay: 2s;
+    transition: visibility 0s, opacity 2s;
+    color: gray;
+}
+
+.ccs-ul-wrapper>ul{
+    list-style-type: none;
+    overflow: hidden;
+}
+
+.ccs-ul-wrapper>ul>li{
+    display: inline-block;
+    margin-left: 8%;
+}
+
+.ccs-ul-wrapper>ul ul{
+    position: absolute;
+    display: none;
+}
+
+.ccs-ul-wrapper>ul>li:hover ul {
+    display: block;
+}
+
+.ccs-ul-wrapper>ul>li ul>li{
+    display: block;
+}
+
+.ccs-ul-wrapper>ul>li ul>li:hover{
+    color: black;
+}
+
+.opened-nav{
+    opacity: 1;
+    visibility: visible;
+}
+
+.closed-nav{
+    transition-delay: 2s, 0s;
+    transition-property: visibility, opacity;
+}
